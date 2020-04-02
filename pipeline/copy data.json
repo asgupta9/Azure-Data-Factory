@@ -1,0 +1,47 @@
+{
+	"name": "copy data",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy_taxonomy_data",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "select AttributeValueDDObjectID, AttributeValueName, OwningAttributeDDObjectID from TAXY01AttributeValue where OwningAttributeDDObjectID=322864",
+						"queryTimeout": "02:00:00"
+					},
+					"sink": {
+						"type": "AzureTableSink",
+						"azureTableInsertType": "replace",
+						"writeBatchSize": 10000
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "dataMall_Taxi01Attr_Value",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "AttributeValueLaborEntries",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"annotations": []
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

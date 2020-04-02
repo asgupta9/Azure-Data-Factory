@@ -1,0 +1,112 @@
+{
+	"name": "dataMall_Taxi01Attr_Value",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabase1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "AbbreviatedValue",
+				"type": "varchar"
+			},
+			{
+				"name": "AttributeValueDDObjectID",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "AttributeValueEffectiveDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "AttributeValueName",
+				"type": "nvarchar"
+			},
+			{
+				"name": "BusinessEffectiveEndDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "BusinessEffectiveStartDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "ChangeRequestCode",
+				"type": "nvarchar"
+			},
+			{
+				"name": "CommentText",
+				"type": "nvarchar"
+			},
+			{
+				"name": "CreatedBy",
+				"type": "varchar"
+			},
+			{
+				"name": "CreatedDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "DQRPendingReviewIndicator",
+				"type": "bit"
+			},
+			{
+				"name": "NumericValue",
+				"type": "decimal",
+				"precision": 16,
+				"scale": 6
+			},
+			{
+				"name": "OldDomainValueID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "OwningAttributeDDObjectID",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "SRActionID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "StatusID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "UpdatedBy",
+				"type": "varchar"
+			},
+			{
+				"name": "UpdatedDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "WorkingActionID",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "TAXY01AttributeValue"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

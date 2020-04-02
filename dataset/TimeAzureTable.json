@@ -1,0 +1,16 @@
+{
+	"name": "TimeAzureTable",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureTableStorage1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureTable",
+		"schema": [],
+		"typeProperties": {
+			"tableName": "taxonomyDataFromOneProfile"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
