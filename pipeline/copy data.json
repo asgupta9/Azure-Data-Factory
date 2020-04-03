@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Copy_taxonomy_data",
+				"name": "fetchDataFromOneProfile",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
