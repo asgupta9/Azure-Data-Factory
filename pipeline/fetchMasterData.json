@@ -1,6 +1,7 @@
 {
-	"name": "copy data",
+	"name": "fetchMasterData",
 	"properties": {
+		"description": "it will bring the master Data from the one profile",
 		"activities": [
 			{
 				"name": "fetchDataFromOneProfile",
