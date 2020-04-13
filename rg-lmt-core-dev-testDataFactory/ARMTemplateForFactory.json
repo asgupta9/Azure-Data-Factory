@@ -42,7 +42,14 @@
 					{
 						"name": "fetchDataFromOneProfile",
 						"type": "Copy",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "checkSourceExists",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"policy": {
 							"timeout": "7.00:00:00",
 							"retry": 0,
@@ -50,11 +57,20 @@
 							"secureOutput": false,
 							"secureInput": false
 						},
-						"userProperties": [],
+						"userProperties": [
+							{
+								"name": "Source",
+								"value": "dbo.TAXY01AttributeValue"
+							},
+							{
+								"name": "Destination",
+								"value": "AttributeValueLaborEntries"
+							}
+						],
 						"typeProperties": {
 							"source": {
 								"type": "AzureSqlSource",
-								"sqlReaderQuery": "select AttributeValueDDObjectID, AttributeValueName, OwningAttributeDDObjectID from TAXY01AttributeValue where OwningAttributeDDObjectID=322864",
+								"sqlReaderQuery": "SELECT \ta.AttributeValueDDObjectID as ID, -- Updated from a.AttributeValueDDObjectID as ID,\n\t\tltrim(rtrim(a.AttributeValueName)) as [NAME] ,\n\t\tltrim(rtrim(c.DataDictionaryObjectShortDesc)) as [Description] ,\n\t\tltrim(rtrim(g.AttributeValueName)) as [UtilizationEligibleIndicator] ,\n\t\tltrim(rtrim(e.AttributeValueName)) as [CustomerFacingIndicator] ,\n\t\tltrim(rtrim(d.AttributeValueName)) as [BillableIndicator] ,\n\t\tltrim(rtrim(f.AttributeValueName)) as [CategoryGroup] ,\n\t\ta.BusinessEffectiveStartDate [EffectiveStartDate], -- Updated from a.AttributeValueEffectiveDate [EffectiveStartDate] ,\n\t\ta.BusinessEffectiveEndDate [EffectiveEndDate]-- Updated from c.DataDictionaryObExpirationDate [EffectiveEndDate]\nFROM    dbo.TAXY01AttributeValue a -- Updated from dbo.TAXY01AttributeValue a\n\t\tJOIN dbo.TAXY01Attribute b ON b.AttributeDataDictionaryObjID = a.OwningAttributeDDObjectID\n\t\tJOIN dbo.TAXY01DataDictionaryObject c ON c.DataDictionaryObjectID = a.AttributeValueDDObjectID -- Updated from a.AttributeValueDDObjectID\n\t\t\n\t\tLEFT JOIN ( SELECT  a.AttributeValueName ,\n\t\t\t\t\t\t\tc.ChildAttributeValueDDObjID\n\t\t\t\t\tFROM    dbo.TAXY01AttributeValue a\n\t\t\t\t\t\t\tJOIN dbo.TAXY01Attribute b ON b.AttributeDataDictionaryObjID = a.OwningAttributeDDObjectID\n\t\t\t\t\t\t\tJOIN dbo.TAXY01AttributeValueRltn c ON c.ParentAttributeValueDDObjID = a.AttributeValueDDObjectID\n\t\t\t\t\tWHERE   b.AttributeName = 'Labor Category Billable Indicator'\n\t\t\t\t\t) d ON d.ChildAttributeValueDDObjID = a.AttributeValueDDObjectID -- Updated from a.AttributeValueDDObjectID\n\t\t\n\t\tLEFT JOIN ( SELECT  a.AttributeValueName ,\n\t\t\t\t\t\t\tc.ChildAttributeValueDDObjID\n\t\t\t\t\tFROM    dbo.TAXY01AttributeValue a\n\t\t\t\t\t\t\tJOIN dbo.TAXY01Attribute b ON b.AttributeDataDictionaryObjID = a.OwningAttributeDDObjectID\n\t\t\t\t\t\t\tJOIN dbo.TAXY01AttributeValueRltn c ON c.ParentAttributeValueDDObjID = a.AttributeValueDDObjectID\n\t\t\t\t\tWHERE   b.AttributeName = 'Labor Category Task Related Indicator'\n\t\t\t\t\t) e ON e.ChildAttributeValueDDObjID = a.AttributeValueDDObjectID -- Updated from a.AttributeValueDDObjectID\n\t\tLEFT JOIN ( SELECT  a.AttributeValueName ,\n\t\t\t\t\t\t\tc.ChildAttributeValueDDObjID\n\t\t\t\t\tFROM    dbo.TAXY01AttributeValue a\n\t\t\t\t\t\t\tJOIN dbo.TAXY01Attribute b ON b.AttributeDataDictionaryObjID = a.OwningAttributeDDObjectID\n\t\t\t\t\t\t\tJOIN dbo.TAXY01AttributeValueRltn c ON c.ParentAttributeValueDDObjID = a.AttributeValueDDObjectID\n\t\t\t\t\tWHERE   b.AttributeName = 'Labor Category Group Name'\n\t\t\t\t\t) f ON f.ChildAttributeValueDDObjID = a.AttributeValueDDObjectID -- Updated from a.AttributeValueDDObjectID\n\t\t\n\t\tLEFT JOIN ( SELECT  a.AttributeValueName ,\n\t\t\t\t\t\t\tc.ChildAttributeValueDDObjID\n\t\t\t\t\tFROM    dbo.TAXY01AttributeValue a\n\t\t\t\t\t\t\tJOIN dbo.TAXY01Attribute b ON b.AttributeDataDictionaryObjID = a.OwningAttributeDDObjectID\n\t\t\t\t\t\t\tJOIN dbo.TAXY01AttributeValueRltn c ON c.ParentAttributeValueDDObjID = a.AttributeValueDDObjectID\n\t\t\t\t\tWHERE   b.AttributeName = 'Labor Category Utilization Eligible Indicator'\n\t\t\t\t\t) g ON g.ChildAttributeValueDDObjID = a.AttributeValueDDObjectID -- Updated from a.AttributeValueDDObjectID\n\t\t\nWHERE   AttributeName = 'Labor Category Name'\n",
 								"queryTimeout": "02:00:00"
 							},
 							"sink": {
@@ -78,6 +94,22 @@
 								"parameters": {}
 							}
 						]
+					},
+					{
+						"name": "checkSourceExists",
+						"description": "check if source exists or not",
+						"type": "Validation",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "dataMall_Taxi01Attr_Value",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"timeout": "7.00:00:00",
+							"sleep": 10
+						}
 					}
 				],
 				"annotations": []
