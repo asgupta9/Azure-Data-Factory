@@ -266,10 +266,7 @@
 						"precision": 10
 					}
 				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "TAXY01AttributeValue"
-				}
+				"typeProperties": {}
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase1')]"
