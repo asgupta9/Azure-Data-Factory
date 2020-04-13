@@ -85,7 +85,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/TimeAzureTable')]",
+			"name": "[concat(parameters('factoryName'), '/laborCategoriesByPartner_Sink')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -97,7 +97,7 @@
 				"type": "AzureTable",
 				"schema": [],
 				"typeProperties": {
-					"tableName": "taxonomyDataFromOneProfile"
+					"tableName": "laborCategoriesByPartner"
 				}
 			},
 			"dependsOn": [
@@ -211,10 +211,7 @@
 						"precision": 10
 					}
 				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "TAXY01Attribute"
-				}
+				"typeProperties": {}
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase1')]"
@@ -251,12 +248,13 @@
 						"typeProperties": {
 							"source": {
 								"type": "AzureSqlSource",
-								"sqlReaderQuery": "SELECT \ta.AttributeValueDDObjectID as ID, -- Updated from a.AttributeValueDDObjectID as ID,\n\t\tltrim(rtrim(a.AttributeValueName)) as [NAME] ,\n\t\tltrim(rtrim(c.DataDictionaryObjectShortDesc)) as [Description] ,\n\t\tltrim(rtrim(g.AttributeValueName)) as [UtilizationEligibleIndicator] ,\n\t\tltrim(rtrim(e.AttributeValueName)) as [CustomerFacingIndicator] ,\n\t\tltrim(rtrim(d.AttributeValueName)) as [BillableIndicator] ,\n\t\tltrim(rtrim(f.AttributeValueName)) as [CategoryGroup] ,\n\t\ta.BusinessEffectiveStartDate [EffectiveStartDate], -- Updated from a.AttributeValueEffectiveDate [EffectiveStartDate] ,\n\t\ta.BusinessEffectiveEndDate [EffectiveEndDate]-- Updated from c.DataDictionaryObExpirationDate [EffectiveEndDate]\nFROM    dbo.TAXY01AttributeValue a -- Updated from dbo.TAXY01AttributeValue a\n\t\tJOIN dbo.TAXY01Attribute b ON b.AttributeDataDictionaryObjID = a.OwningAttributeDDObjectID\n\t\tJOIN dbo.TAXY01DataDictionaryObject c ON c.DataDictionaryObjectID = a.AttributeValueDDObjectID -- Updated from a.AttributeValueDDObjectID\n\t\t\n\t\tLEFT JOIN ( SELECT  a.AttributeValueName ,\n\t\t\t\t\t\t\tc.ChildAttributeValueDDObjID\n\t\t\t\t\tFROM    dbo.TAXY01AttributeValue a\n\t\t\t\t\t\t\tJOIN dbo.TAXY01Attribute b ON b.AttributeDataDictionaryObjID = a.OwningAttributeDDObjectID\n\t\t\t\t\t\t\tJOIN dbo.TAXY01AttributeValueRltn c ON c.ParentAttributeValueDDObjID = a.AttributeValueDDObjectID\n\t\t\t\t\tWHERE   b.AttributeName = 'Labor Category Billable Indicator'\n\t\t\t\t\t) d ON d.ChildAttributeValueDDObjID = a.AttributeValueDDObjectID -- Updated from a.AttributeValueDDObjectID\n\t\t\n\t\tLEFT JOIN ( SELECT  a.AttributeValueName ,\n\t\t\t\t\t\t\tc.ChildAttributeValueDDObjID\n\t\t\t\t\tFROM    dbo.TAXY01AttributeValue a\n\t\t\t\t\t\t\tJOIN dbo.TAXY01Attribute b ON b.AttributeDataDictionaryObjID = a.OwningAttributeDDObjectID\n\t\t\t\t\t\t\tJOIN dbo.TAXY01AttributeValueRltn c ON c.ParentAttributeValueDDObjID = a.AttributeValueDDObjectID\n\t\t\t\t\tWHERE   b.AttributeName = 'Labor Category Task Related Indicator'\n\t\t\t\t\t) e ON e.ChildAttributeValueDDObjID = a.AttributeValueDDObjectID -- Updated from a.AttributeValueDDObjectID\n\t\tLEFT JOIN ( SELECT  a.AttributeValueName ,\n\t\t\t\t\t\t\tc.ChildAttributeValueDDObjID\n\t\t\t\t\tFROM    dbo.TAXY01AttributeValue a\n\t\t\t\t\t\t\tJOIN dbo.TAXY01Attribute b ON b.AttributeDataDictionaryObjID = a.OwningAttributeDDObjectID\n\t\t\t\t\t\t\tJOIN dbo.TAXY01AttributeValueRltn c ON c.ParentAttributeValueDDObjID = a.AttributeValueDDObjectID\n\t\t\t\t\tWHERE   b.AttributeName = 'Labor Category Group Name'\n\t\t\t\t\t) f ON f.ChildAttributeValueDDObjID = a.AttributeValueDDObjectID -- Updated from a.AttributeValueDDObjectID\n\t\t\n\t\tLEFT JOIN ( SELECT  a.AttributeValueName ,\n\t\t\t\t\t\t\tc.ChildAttributeValueDDObjID\n\t\t\t\t\tFROM    dbo.TAXY01AttributeValue a\n\t\t\t\t\t\t\tJOIN dbo.TAXY01Attribute b ON b.AttributeDataDictionaryObjID = a.OwningAttributeDDObjectID\n\t\t\t\t\t\t\tJOIN dbo.TAXY01AttributeValueRltn c ON c.ParentAttributeValueDDObjID = a.AttributeValueDDObjectID\n\t\t\t\t\tWHERE   b.AttributeName = 'Labor Category Utilization Eligible Indicator'\n\t\t\t\t\t) g ON g.ChildAttributeValueDDObjID = a.AttributeValueDDObjectID -- Updated from a.AttributeValueDDObjectID\n\t\t\nWHERE   AttributeName = 'Labor Category Name'\n",
+								"sqlReaderQuery": "SELECT \ta.AttributeValueDDObjectID as ID,\n\t\tltrim(rtrim(a.AttributeValueName)) as [NAME] ,\n\t\tltrim(rtrim(c.DataDictionaryObjectShortDesc)) as [Description] ,\n\t\tltrim(rtrim(g.AttributeValueName)) as [UtilizationEligibleIndicator] ,\n\t\tltrim(rtrim(e.AttributeValueName)) as [CustomerFacingIndicator] ,\n\t\tltrim(rtrim(d.AttributeValueName)) as [BillableIndicator] ,\n\t\tltrim(rtrim(f.AttributeValueName)) as [CategoryGroup] ,\n\t\ta.BusinessEffectiveStartDate [EffectiveStartDate],\n\t\ta.BusinessEffectiveEndDate [EffectiveEndDate]\nFROM    dbo.TAXY01AttributeValue a \n\t\tJOIN dbo.TAXY01Attribute b ON b.AttributeDataDictionaryObjID = a.OwningAttributeDDObjectID\n\t\tJOIN dbo.TAXY01DataDictionaryObject c ON c.DataDictionaryObjectID = a.AttributeValueDDObjectID \n\t\t\n\t\tLEFT JOIN ( SELECT  a.AttributeValueName ,\n\t\t\t\t\t\t\tc.ChildAttributeValueDDObjID\n\t\t\t\t\tFROM    dbo.TAXY01AttributeValue a\n\t\t\t\t\t\t\tJOIN dbo.TAXY01Attribute b ON b.AttributeDataDictionaryObjID = a.OwningAttributeDDObjectID\n\t\t\t\t\t\t\tJOIN dbo.TAXY01AttributeValueRltn c ON c.ParentAttributeValueDDObjID = a.AttributeValueDDObjectID\n\t\t\t\t\tWHERE   b.AttributeName = 'Labor Category Billable Indicator'\n\t\t\t\t\t) d ON d.ChildAttributeValueDDObjID = a.AttributeValueDDObjectID \n\t\t\n\t\tLEFT JOIN ( SELECT  a.AttributeValueName ,\n\t\t\t\t\t\t\tc.ChildAttributeValueDDObjID\n\t\t\t\t\tFROM    dbo.TAXY01AttributeValue a\n\t\t\t\t\t\t\tJOIN dbo.TAXY01Attribute b ON b.AttributeDataDictionaryObjID = a.OwningAttributeDDObjectID\n\t\t\t\t\t\t\tJOIN dbo.TAXY01AttributeValueRltn c ON c.ParentAttributeValueDDObjID = a.AttributeValueDDObjectID\n\t\t\t\t\tWHERE   b.AttributeName = 'Labor Category Task Related Indicator'\n\t\t\t\t\t) e ON e.ChildAttributeValueDDObjID = a.AttributeValueDDObjectID \n\t\tLEFT JOIN ( SELECT  a.AttributeValueName ,\n\t\t\t\t\t\t\tc.ChildAttributeValueDDObjID\n\t\t\t\t\tFROM    dbo.TAXY01AttributeValue a\n\t\t\t\t\t\t\tJOIN dbo.TAXY01Attribute b ON b.AttributeDataDictionaryObjID = a.OwningAttributeDDObjectID\n\t\t\t\t\t\t\tJOIN dbo.TAXY01AttributeValueRltn c ON c.ParentAttributeValueDDObjID = a.AttributeValueDDObjectID\n\t\t\t\t\tWHERE   b.AttributeName = 'Labor Category Group Name'\n\t\t\t\t\t) f ON f.ChildAttributeValueDDObjID = a.AttributeValueDDObjectID \n\t\t\n\t\tLEFT JOIN ( SELECT  a.AttributeValueName ,\n\t\t\t\t\t\t\tc.ChildAttributeValueDDObjID\n\t\t\t\t\tFROM    dbo.TAXY01AttributeValue a\n\t\t\t\t\t\t\tJOIN dbo.TAXY01Attribute b ON b.AttributeDataDictionaryObjID = a.OwningAttributeDDObjectID\n\t\t\t\t\t\t\tJOIN dbo.TAXY01AttributeValueRltn c ON c.ParentAttributeValueDDObjID = a.AttributeValueDDObjectID\n\t\t\t\t\tWHERE   b.AttributeName = 'Labor Category Utilization Eligible Indicator'\n\t\t\t\t\t) g ON g.ChildAttributeValueDDObjID = a.AttributeValueDDObjectID \n\t\t\nWHERE   AttributeName = 'Labor Category Name'\n",
 								"queryTimeout": "02:00:00"
 							},
 							"sink": {
 								"type": "AzureTableSink",
 								"azureTableInsertType": "replace",
+								"azureTableDefaultPartitionKeyValue": "LaborCategoriesByPartner",
 								"writeBatchSize": 10000
 							},
 							"enableStaging": false
@@ -270,7 +268,7 @@
 						],
 						"outputs": [
 							{
-								"referenceName": "AttributeValueLaborEntries",
+								"referenceName": "laborCategoriesByPartner_Sink",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -281,7 +279,7 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/dataMall_Taxi01Attr_Value')]",
-				"[concat(variables('factoryId'), '/datasets/AttributeValueLaborEntries')]"
+				"[concat(variables('factoryId'), '/datasets/laborCategoriesByPartner_Sink')]"
 			]
 		}
 	]
