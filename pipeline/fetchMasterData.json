@@ -33,6 +33,7 @@
 					"sink": {
 						"type": "AzureTableSink",
 						"azureTableInsertType": "replace",
+						"azureTableDefaultPartitionKeyValue": "LaborCategoriesByPartner",
 						"writeBatchSize": 10000
 					},
 					"enableStaging": false
@@ -45,7 +46,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "AttributeValueLaborEntries",
+						"referenceName": "laborCategoriesByPartner_Sink",
 						"type": "DatasetReference"
 					}
 				]
