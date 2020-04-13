@@ -102,7 +102,11 @@
 				"type": "int",
 				"precision": 10
 			}
-		]
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "TAXY01Attribute"
+		}
 	},
 	"type": "Microsoft.DataFactory/factories/datasets"
 }
