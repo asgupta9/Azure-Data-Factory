@@ -1,0 +1,118 @@
+{
+	"name": "PullMaterData",
+	"properties": {
+		"description": "pipeline will bring the master Data from the one profile",
+		"activities": [
+			{
+				"name": "LaborCategoryPullActivity",
+				"description": "",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "isSourceExists",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT a.AttributeValueDDObjectID as ID,\nltrim(rtrim(a.AttributeValueName)) as [NAME] ,\nltrim(rtrim(c.DataDictionaryObjectShortDesc)) as [Description] ,\nltrim(rtrim(g.AttributeValueName)) as [UtilizationEligibleIndicator] ,\nltrim(rtrim(e.AttributeValueName)) as [CustomerFacingIndicator] ,\nltrim(rtrim(d.AttributeValueName)) as [BillableIndicator] ,\nltrim(rtrim(f.AttributeValueName)) as [CategoryGroup] ,\na.BusinessEffectiveStartDate [EffectiveStartDate],\na.BusinessEffectiveEndDate [EffectiveEndDate]\nFROM    dbo.TAXY01AttributeValue a \nJOIN dbo.TAXY01Attribute b ON b.AttributeDataDictionaryObjID = a.OwningAttributeDDObjectID\nJOIN dbo.TAXY01DataDictionaryObject c ON c.DataDictionaryObjectID = a.AttributeValueDDObjectID \nLEFT JOIN ( SELECT  a.AttributeValueName , c.ChildAttributeValueDDObjID \nFROM  dbo.TAXY01AttributeValue a \n\nJOIN dbo.TAXY01Attribute b ON b.AttributeDataDictionaryObjID = a.OwningAttributeDDObjectID \nJOIN dbo.TAXY01AttributeValueRltn c ON c.ParentAttributeValueDDObjID = a.AttributeValueDDObjectID\n\nWHERE   b.AttributeName = 'Labor Category Billable Indicator') d ON d.ChildAttributeValueDDObjID = a.AttributeValueDDObjectID \n\nLEFT JOIN ( SELECT  a.AttributeValueName ,c.ChildAttributeValueDDObjID FROM    dbo.TAXY01AttributeValue a \nJOIN dbo.TAXY01Attribute b ON b.AttributeDataDictionaryObjID = a.OwningAttributeDDObjectID \nJOIN dbo.TAXY01AttributeValueRltn c ON c.ParentAttributeValueDDObjID = a.AttributeValueDDObjectID \nWHERE   b.AttributeName = 'Labor Category Task Related Indicator') e ON e.ChildAttributeValueDDObjID = a.AttributeValueDDObjectID\nLEFT JOIN ( SELECT  a.AttributeValueName ,\nc.ChildAttributeValueDDObjID FROM    dbo.TAXY01AttributeValue a \n\nJOIN dbo.TAXY01Attribute b ON b.AttributeDataDictionaryObjID = a.OwningAttributeDDObjectID\n\nJOIN dbo.TAXY01AttributeValueRltn c ON c.ParentAttributeValueDDObjID = a.AttributeValueDDObjectID \nWHERE   b.AttributeName = 'Labor Category Group Name') f ON f.ChildAttributeValueDDObjID = a.AttributeValueDDObjectID \nLEFT JOIN ( SELECT  a.AttributeValueName ,c.ChildAttributeValueDDObjID FROM    dbo.TAXY01AttributeValue a \nJOIN dbo.TAXY01Attribute b ON b.AttributeDataDictionaryObjID = a.OwningAttributeDDObjectID\nJOIN dbo.TAXY01AttributeValueRltn c ON c.ParentAttributeValueDDObjID = a.AttributeValueDDObjectID WHERE   b.AttributeName = 'Labor Category Utilization Eligible Indicator') g ON g.ChildAttributeValueDDObjID = a.AttributeValueDDObjectID \nWHERE   AttributeName = 'Labor Category Name'",
+						"queryTimeout": "02:00:00"
+					},
+					"sink": {
+						"type": "AzureTableSink",
+						"azureTableInsertType": "replace",
+						"azureTableDefaultPartitionKeyValue": "LaborCategory",
+						"writeBatchSize": 10000
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "dataMall",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "lmtLaborCategories",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "isSourceExists",
+				"description": "Check for the existence of source",
+				"type": "Validation",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "dataMall",
+						"type": "DatasetReference"
+					},
+					"timeout": "7.00:00:00",
+					"sleep": 10
+				}
+			},
+			{
+				"name": "ReasonCodePullActivity",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "isSourceExists",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT  a.AttributeValueDDObjectID as ID,\n\t\tltrim(rtrim(a.AttributeValueName)) as [NAME] ,\n\t\tltrim(rtrim(c.DataDictionaryObjectShortDesc)) as [Description] ,\n\t\ta.AttributeValueEffectiveDate as [EffectiveStartDate], \n\t\tc.DataDictionaryObExpirationDate as [EffectiveEndDate]\nFROM    dbo.TAXY01AttributeValue a\n\t\tJOIN dbo.TAXY01Attribute b ON b.AttributeDataDictionaryObjID = a.OwningAttributeDDObjectID\n\t\tJOIN dbo.TAXY01DataDictionaryObject c ON c.DataDictionaryObjectID = a.AttributeValueDDObjectID\nWHERE   AttributeName = 'Labor Entry Rejection Reason Name' OR AttributeName = 'Labor Entry Late Approval Reason Name' OR\n\t\tAttributeName = 'Labor Entry Late Submission Reason Name' OR AttributeName = 'Labor Entry Adjustment Reason Name'\n",
+						"queryTimeout": "02:00:00"
+					},
+					"sink": {
+						"type": "AzureTableSink",
+						"azureTableInsertType": "replace",
+						"azureTableDefaultPartitionKeyValue": "ReasonCodes",
+						"writeBatchSize": 10000
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "dataMall",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "lmtReasonCodes",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"annotations": []
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
