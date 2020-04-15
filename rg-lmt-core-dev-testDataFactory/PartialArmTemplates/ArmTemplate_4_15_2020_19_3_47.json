@@ -6,26 +6,6 @@
 			"type": "string",
 			"metadata": "Data Factory name",
 			"defaultValue": "rg-lmt-core-dev-testDataFactory"
-		},
-		"AzureSqlDatabase1_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'AzureSqlDatabase1'"
-		},
-		"AzureSqlDatabase1_servicePrincipalKey": {
-			"type": "secureString",
-			"metadata": "Secure string for 'servicePrincipalKey' of 'AzureSqlDatabase1'"
-		},
-		"AzureTableStorage1_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'AzureTableStorage1'"
-		},
-		"AzureSqlDatabase1_properties_typeProperties_servicePrincipalId": {
-			"type": "string",
-			"defaultValue": "5eb170f9-f828-4121-936c-288eb43b050e"
-		},
-		"AzureSqlDatabase1_properties_typeProperties_tenant": {
-			"type": "string",
-			"defaultValue": "72f988bf-86f1-41af-91ab-2d7cd011db47"
 		}
 	},
 	"variables": {
@@ -76,15 +56,13 @@
 						"inputs": [
 							{
 								"referenceName": "dataMall",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
 							{
 								"referenceName": "lmtLaborCategories",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					},
@@ -97,8 +75,7 @@
 						"typeProperties": {
 							"dataset": {
 								"referenceName": "dataMall",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							},
 							"timeout": "7.00:00:00",
 							"sleep": 10
@@ -140,15 +117,13 @@
 						"inputs": [
 							{
 								"referenceName": "dataMall",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
 							{
 								"referenceName": "lmtReasonCodes",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					}
@@ -273,9 +248,7 @@
 					"table": "TAXY01AttributeValue"
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase1')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/lmtLaborCategories')]",
@@ -293,9 +266,7 @@
 					"tableName": "LaborCategories"
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureTableStorage1')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/lmtReasonCodes')]",
@@ -311,40 +282,6 @@
 				"schema": [],
 				"typeProperties": {
 					"tableName": "ReasonCodes"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureTableStorage1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AzureSqlDatabase1')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureSqlDatabase",
-				"typeProperties": {
-					"connectionString": "[parameters('AzureSqlDatabase1_connectionString')]",
-					"servicePrincipalId": "[parameters('AzureSqlDatabase1_properties_typeProperties_servicePrincipalId')]",
-					"servicePrincipalKey": {
-						"type": "SecureString",
-						"value": "[parameters('AzureSqlDatabase1_servicePrincipalKey')]"
-					},
-					"tenant": "[parameters('AzureSqlDatabase1_properties_typeProperties_tenant')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AzureTableStorage1')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureTableStorage",
-				"typeProperties": {
-					"connectionString": "[parameters('AzureTableStorage1_connectionString')]"
 				}
 			},
 			"dependsOn": []
