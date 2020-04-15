@@ -1,5 +1,5 @@
 {
-	"name": "AttributeValueLaborEntries",
+	"name": "lmtReasonCodes",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureTableStorage1",
@@ -9,7 +9,7 @@
 		"type": "AzureTable",
 		"schema": [],
 		"typeProperties": {
-			"tableName": "AttributeValueLaborEntries"
+			"tableName": "ReasonCodes"
 		}
 	},
 	"type": "Microsoft.DataFactory/factories/datasets"

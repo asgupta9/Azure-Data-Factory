@@ -1,5 +1,5 @@
 {
-	"name": "TimeAzureTable",
+	"name": "lmtLaborCategories",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureTableStorage1",
@@ -9,7 +9,7 @@
 		"type": "AzureTable",
 		"schema": [],
 		"typeProperties": {
-			"tableName": "taxonomyDataFromOneProfile"
+			"tableName": "LaborCategories"
 		}
 	},
 	"type": "Microsoft.DataFactory/factories/datasets"

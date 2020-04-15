@@ -1,5 +1,5 @@
 {
-	"name": "dataMall_Taxi01Attr_Value",
+	"name": "dataMall",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureSqlDatabase1",
