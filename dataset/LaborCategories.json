@@ -11,6 +11,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
+				"fileName": "LaborCategories",
 				"container": "laborcategory-partner-mapping"
 			}
 		}
