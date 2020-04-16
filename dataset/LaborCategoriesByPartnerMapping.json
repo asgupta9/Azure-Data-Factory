@@ -1,0 +1,35 @@
+{
+	"name": "LaborCategoriesByPartnerMapping",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStorageLinkedService",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "LaborCategoriesByPartnerMapping",
+				"container": "laborcategory-partner-mapping"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"LABORCATEGORYID": {
+					"type": "integer"
+				},
+				"PARTNER": {
+					"type": "string"
+				},
+				"PARTNERLABORCATEGORYID": {
+					"type": "string"
+				},
+				"ISACTIVE": {
+					"type": "string"
+				}
+			}
+		}
+	}
+}
