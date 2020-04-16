@@ -30,10 +30,15 @@
 						"queryTimeout": "02:00:00"
 					},
 					"sink": {
-						"type": "AzureTableSink",
-						"azureTableInsertType": "replace",
-						"azureTableDefaultPartitionKeyValue": "LaborCategory",
-						"writeBatchSize": 10000
+						"type": "JsonSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "JsonWriteSettings",
+							"quoteAllText": true,
+							"filePattern": "setOfObjects"
+						}
 					},
 					"enableStaging": false
 				},
@@ -45,7 +50,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "lmtLaborCategories",
+						"referenceName": "LaborCategories",
 						"type": "DatasetReference"
 					}
 				]
@@ -91,10 +96,15 @@
 						"queryTimeout": "02:00:00"
 					},
 					"sink": {
-						"type": "AzureTableSink",
-						"azureTableInsertType": "replace",
-						"azureTableDefaultPartitionKeyValue": "ReasonCodes",
-						"writeBatchSize": 10000
+						"type": "JsonSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "JsonWriteSettings",
+							"quoteAllText": true,
+							"filePattern": "setOfObjects"
+						}
 					},
 					"enableStaging": false
 				},
@@ -106,7 +116,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "lmtReasonCodes",
+						"referenceName": "ReasonCodes",
 						"type": "DatasetReference"
 					}
 				]

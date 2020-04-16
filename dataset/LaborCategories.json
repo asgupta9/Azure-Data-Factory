@@ -1,0 +1,18 @@
+{
+	"name": "LaborCategories",
+	"properties": {
+		"description": "it will store the labor categories in JSON format in Blob Storage",
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStorageLinkedService",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"container": "laborcategory-partner-mapping"
+			}
+		}
+	}
+}
