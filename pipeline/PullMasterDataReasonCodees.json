@@ -1,0 +1,117 @@
+{
+	"name": "PullMasterDataReasonCodees",
+	"properties": {
+		"description": "pipeline will bring the reasoncodes from the master data",
+		"activities": [
+			{
+				"name": "isSourceExists",
+				"type": "Validation",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "dataMall",
+						"type": "DatasetReference"
+					},
+					"timeout": "7.00:00:00",
+					"sleep": 10
+				}
+			},
+			{
+				"name": "ReasonCodePullActivity",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT  a.AttributeValueDDObjectID as ID,\n\t\tltrim(rtrim(a.AttributeValueName)) as [NAME] ,\n\t\tltrim(rtrim(c.DataDictionaryObjectShortDesc)) as [Description] ,\n\t\ta.AttributeValueEffectiveDate as [EffectiveStartDate], \n\t\tc.DataDictionaryObExpirationDate as [EffectiveEndDate]\nFROM    dbo.TAXY01AttributeValue a\n\t\tJOIN dbo.TAXY01Attribute b ON b.AttributeDataDictionaryObjID = a.OwningAttributeDDObjectID\n\t\tJOIN dbo.TAXY01DataDictionaryObject c ON c.DataDictionaryObjectID = a.AttributeValueDDObjectID\nWHERE   AttributeName = 'Labor Entry Rejection Reason Name' OR AttributeName = 'Labor Entry Late Approval Reason Name' OR\n\t\tAttributeName = 'Labor Entry Late Submission Reason Name' OR AttributeName = 'Labor Entry Adjustment Reason Name'\n",
+						"queryTimeout": "02:00:00"
+					},
+					"sink": {
+						"type": "JsonSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "JsonWriteSettings",
+							"quoteAllText": true,
+							"filePattern": "setOfObjects"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "ID",
+									"type": "Int64"
+								},
+								"sink": {
+									"path": "$['ID']"
+								}
+							},
+							{
+								"source": {
+									"name": "NAME",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['NAME']"
+								}
+							},
+							{
+								"source": {
+									"name": "Description",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['Description']"
+								}
+							},
+							{
+								"source": {
+									"name": "EffectiveStartDate",
+									"type": "DateTime"
+								},
+								"sink": {
+									"path": "$['EffectiveStartDate']"
+								}
+							},
+							{
+								"source": {
+									"name": "EffectiveEndDate",
+									"type": "DateTime"
+								},
+								"sink": {
+									"path": "$['EffectiveEndDate']"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "dataMall",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ReasonCodes",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"annotations": []
+	}
+}
