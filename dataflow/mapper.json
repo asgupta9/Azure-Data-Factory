@@ -1,0 +1,42 @@
+{
+	"name": "mapper",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "dataMall",
+						"type": "DatasetReference"
+					},
+					"name": "dataMall"
+				},
+				{
+					"dataset": {
+						"referenceName": "LaborCategoriesByPartnerMapping",
+						"type": "DatasetReference"
+					},
+					"name": "LaborCategoriesBypartnerMapping"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "LaborCategoriesByPartner",
+						"type": "DatasetReference"
+					},
+					"name": "LaborCategoriesByPartner"
+				}
+			],
+			"transformations": [
+				{
+					"name": "join"
+				},
+				{
+					"name": "select"
+				}
+			],
+			"script": "source(output(\n\t\tID as long,\n\t\tNAME as string,\n\t\tDescription as string,\n\t\tUtilizationEligibleIndicator as string,\n\t\tCustomerFacingIndicator as string,\n\t\tBillableIndicator as string,\n\t\tCategoryGroup as string,\n\t\tEffectiveStartDate as timestamp,\n\t\tEffectiveEndDate as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT a.AttributeValueDDObjectID as ID,\\nltrim(rtrim(a.AttributeValueName)) as [NAME] ,\\nltrim(rtrim(c.DataDictionaryObjectShortDesc)) as [Description] ,\\nltrim(rtrim(g.AttributeValueName)) as [UtilizationEligibleIndicator] ,\\nltrim(rtrim(e.AttributeValueName)) as [CustomerFacingIndicator] ,\\nltrim(rtrim(d.AttributeValueName)) as [BillableIndicator] ,\\nltrim(rtrim(f.AttributeValueName)) as [CategoryGroup] ,\\na.BusinessEffectiveStartDate [EffectiveStartDate],\\na.BusinessEffectiveEndDate [EffectiveEndDate]\\nFROM    dbo.TAXY01AttributeValue a \\nJOIN dbo.TAXY01Attribute b ON b.AttributeDataDictionaryObjID = a.OwningAttributeDDObjectID\\nJOIN dbo.TAXY01DataDictionaryObject c ON c.DataDictionaryObjectID = a.AttributeValueDDObjectID \\nLEFT JOIN ( SELECT  a.AttributeValueName , c.ChildAttributeValueDDObjID \\nFROM  dbo.TAXY01AttributeValue a \\n\\nJOIN dbo.TAXY01Attribute b ON b.AttributeDataDictionaryObjID = a.OwningAttributeDDObjectID \\nJOIN dbo.TAXY01AttributeValueRltn c ON c.ParentAttributeValueDDObjID = a.AttributeValueDDObjectID\\n\\nWHERE   b.AttributeName = \\'Labor Category Billable Indicator\\') d ON d.ChildAttributeValueDDObjID = a.AttributeValueDDObjectID \\n\\nLEFT JOIN ( SELECT  a.AttributeValueName ,c.ChildAttributeValueDDObjID FROM    dbo.TAXY01AttributeValue a \\nJOIN dbo.TAXY01Attribute b ON b.AttributeDataDictionaryObjID = a.OwningAttributeDDObjectID \\nJOIN dbo.TAXY01AttributeValueRltn c ON c.ParentAttributeValueDDObjID = a.AttributeValueDDObjectID \\nWHERE   b.AttributeName = \\'Labor Category Task Related Indicator\\') e ON e.ChildAttributeValueDDObjID = a.AttributeValueDDObjectID\\nLEFT JOIN ( SELECT  a.AttributeValueName ,\\nc.ChildAttributeValueDDObjID FROM    dbo.TAXY01AttributeValue a \\n\\nJOIN dbo.TAXY01Attribute b ON b.AttributeDataDictionaryObjID = a.OwningAttributeDDObjectID\\n\\nJOIN dbo.TAXY01AttributeValueRltn c ON c.ParentAttributeValueDDObjID = a.AttributeValueDDObjectID \\nWHERE   b.AttributeName = \\'Labor Category Group Name\\') f ON f.ChildAttributeValueDDObjID = a.AttributeValueDDObjectID \\nLEFT JOIN ( SELECT  a.AttributeValueName ,c.ChildAttributeValueDDObjID FROM    dbo.TAXY01AttributeValue a \\nJOIN dbo.TAXY01Attribute b ON b.AttributeDataDictionaryObjID = a.OwningAttributeDDObjectID\\nJOIN dbo.TAXY01AttributeValueRltn c ON c.ParentAttributeValueDDObjID = a.AttributeValueDDObjectID WHERE   b.AttributeName = \\'Labor Category Utilization Eligible Indicator\\') g ON g.ChildAttributeValueDDObjID = a.AttributeValueDDObjectID \\nWHERE   AttributeName = \\'Labor Category Name\\'',\n\tformat: 'query') ~> dataMall\nsource(output(\n\t\tISACTIVE as boolean,\n\t\tLABORCATEGORYID as integer,\n\t\tPARTNER as string,\n\t\tPARTNERLABORCATEGORYID as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> LaborCategoriesBypartnerMapping\ndataMall, LaborCategoriesBypartnerMapping join(ID == LABORCATEGORYID,\n\tjoinType:'inner',\n\tbroadcast: 'none')~> join\njoin select(mapColumn(\n\t\tID,\n\t\tNAME,\n\t\tDescription,\n\t\tUtilizationEligibleIndicator,\n\t\tCustomerFacingIndicator,\n\t\tBillableIndicator,\n\t\tCategoryGroup,\n\t\tEffectiveStartDate,\n\t\tEffectiveEndDate,\n\t\tISACTIVE,\n\t\tPARTNER,\n\t\tPARTNERLABORCATEGORYID\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> select\nselect sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['LaborCategoriesByPartner'],\n\tmapColumn(\n\t\tID,\n\t\tNAME,\n\t\tDescription,\n\t\tUtilizationEligibleIndicator,\n\t\tCustomerFacingIndicator,\n\t\tBillableIndicator,\n\t\tCategoryGroup,\n\t\tEffectiveStartDate,\n\t\tEffectiveEndDate,\n\t\tISACTIVE,\n\t\tPARTNER,\n\t\tPARTNERLABORCATEGORYID\n\t),\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> LaborCategoriesByPartner"
+		}
+	}
+}
