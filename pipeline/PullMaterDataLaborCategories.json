@@ -71,7 +71,7 @@
 				}
 			},
 			{
-				"name": "dataflow1",
+				"name": "mapper",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [
 					{
@@ -91,7 +91,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "dataflow1",
+						"referenceName": "mapper",
 						"type": "DataFlowReference"
 					},
 					"compute": {
