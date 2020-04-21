@@ -91,7 +91,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "mapper",
+						"referenceName": "mapperLaborCategories",
 						"type": "DataFlowReference"
 					},
 					"compute": {

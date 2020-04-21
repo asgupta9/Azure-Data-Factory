@@ -1,5 +1,5 @@
 {
-	"name": "mapper",
+	"name": "mapperLaborCategories",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
