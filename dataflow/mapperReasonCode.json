@@ -1,0 +1,42 @@
+{
+	"name": "mapperReasonCode",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "dataMall",
+						"type": "DatasetReference"
+					},
+					"name": "dataMall"
+				},
+				{
+					"dataset": {
+						"referenceName": "ReasonCodeMapping",
+						"type": "DatasetReference"
+					},
+					"name": "ReasonCodesMapping"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "LaborCategoriesByPartner",
+						"type": "DatasetReference"
+					},
+					"name": "ReasonCode"
+				}
+			],
+			"transformations": [
+				{
+					"name": "join"
+				},
+				{
+					"name": "select"
+				}
+			],
+			"script": "source(output(\n\t\tID as long,\n\t\tNAME as string,\n\t\tDescription as string,\n\t\tEffectiveStartDate as timestamp,\n\t\tEffectiveEndDate as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT  a.AttributeValueDDObjectID as ID,\\n\t\tltrim(rtrim(a.AttributeValueName)) as [NAME] ,\\n\t\tltrim(rtrim(c.DataDictionaryObjectShortDesc)) as [Description] ,\\n\t\ta.AttributeValueEffectiveDate as [EffectiveStartDate], \\n\t\tc.DataDictionaryObExpirationDate as [EffectiveEndDate]\\nFROM    dbo.TAXY01AttributeValue a\\n\t\tJOIN dbo.TAXY01Attribute b ON b.AttributeDataDictionaryObjID = a.OwningAttributeDDObjectID\\n\t\tJOIN dbo.TAXY01DataDictionaryObject c ON c.DataDictionaryObjectID = a.AttributeValueDDObjectID\\nWHERE   AttributeName = \\'Labor Entry Rejection Reason Name\\' OR AttributeName = \\'Labor Entry Late Approval Reason Name\\' OR\\n\t\tAttributeName = \\'Labor Entry Late Submission Reason Name\\' OR AttributeName = \\'Labor Entry Adjustment Reason Name\\'\\n',\n\tformat: 'query') ~> dataMall\nsource(output(\n\t\tISACTIVE as boolean,\n\t\tREASONCODEID as integer,\n\t\tREASONCODETYPE as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> ReasonCodesMapping\ndataMall, ReasonCodesMapping join(ID == REASONCODEID,\n\tjoinType:'inner',\n\tbroadcast: 'none')~> join\njoin select(mapColumn(\n\t\tNAME,\n\t\tDescription,\n\t\tEffectiveStartDate,\n\t\tEffectiveEndDate,\n\t\tISACTIVE,\n\t\tREASONCODEID,\n\t\tREASONCODETYPE\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> select\nselect sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['LaborCategoriesByPartner'],\n\tmapColumn(\n\t\tID,\n\t\tNAME,\n\t\tDescription,\n\t\tUtilizationEligibleIndicator,\n\t\tCustomerFacingIndicator,\n\t\tBillableIndicator,\n\t\tCategoryGroup,\n\t\tEffectiveStartDate,\n\t\tEffectiveEndDate,\n\t\tISACTIVE,\n\t\tPARTNER,\n\t\tPARTNERLABORCATEGORYID\n\t),\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ReasonCode"
+		}
+	}
+}

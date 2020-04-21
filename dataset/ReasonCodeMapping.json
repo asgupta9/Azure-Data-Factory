@@ -1,0 +1,32 @@
+{
+	"name": "ReasonCodeMapping",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStorageLinkedService",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "ReasonCodesMapping",
+				"container": "reasoncodes"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"ISACTIVE": {
+					"type": "string"
+				},
+				"REASONCODEID": {
+					"type": "integer"
+				},
+				"REASONCODETYPE": {
+					"type": "string"
+				}
+			}
+		}
+	}
+}
